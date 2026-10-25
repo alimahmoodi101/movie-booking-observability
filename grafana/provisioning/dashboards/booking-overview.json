@@ -1,0 +1,92 @@
+{
+  "title": "Movie Booking - Overview",
+  "uid": "movie-booking-overview",
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "5s",
+  "time": { "from": "now-30m", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Bookings confirmed (rate/min) - Counter",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [
+        { "expr": "sum(rate(bookings_total[1m])) * 60", "legendFormat": "bookings/min" }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Seats currently held - Gauge",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [
+        { "expr": "seats_held_current", "legendFormat": "seats held" }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Payment duration p95 - Histogram",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "targets": [
+        { "expr": "histogram_quantile(0.95, sum(rate(payment_duration_seconds_bucket[5m])) by (le))", "legendFormat": "p95" }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Payment duration average - Summary",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "targets": [
+        { "expr": "rate(payment_duration_summary_seconds_sum[5m]) / rate(payment_duration_summary_seconds_count[5m])", "legendFormat": "avg payment duration" }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "HTTP request duration p95 by endpoint",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+      "targets": [
+        { "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le, endpoint))", "legendFormat": "{{endpoint}}" }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Booking failures by reason - Counter",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
+      "targets": [
+        { "expr": "sum(rate(booking_failures_total[1m])) by (reason) * 60", "legendFormat": "{{reason}}/min" }
+      ]
+    },
+    {
+      "id": 7,
+      "title": "CPU usage - movie-booking-host (Node Exporter)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 24 },
+      "targets": [
+        { "expr": "100 - (avg by (machine) (rate(node_cpu_seconds_total{mode=\"idle\",machine=\"movie-booking-host\"}[5m])) * 100)", "legendFormat": "CPU %" }
+      ]
+    },
+    {
+      "id": 8,
+      "title": "Memory usage - movie-booking-host (Node Exporter)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 24 },
+      "targets": [
+        { "expr": "1 - (node_memory_MemAvailable_bytes{machine=\"movie-booking-host\"} / node_memory_MemTotal_bytes{machine=\"movie-booking-host\"})", "legendFormat": "Memory used fraction" }
+      ]
+    },
+    {
+      "id": 9,
+      "title": "Cardinality demo: distinct series for demo_requests_total",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 32 },
+      "targets": [
+        { "expr": "count(demo_requests_total)", "legendFormat": "series count" }
+      ]
+    }
+  ]
+}
